@@ -5,6 +5,10 @@ function sigmoid(t) {
     return 1/(1+Math.pow(Math.E, -t));
 }
 
+function diomgis(t) {
+  return -Math.log(Math.E, ((1/t)-1));
+}
+
 // because array transformations are useful
 // example
 // to create an array of x position from an array of objects with x positions:
@@ -32,7 +36,6 @@ function expect(a, b) {
 }
 
 
-
 // root network class, to store information about the network
 // neurons: count of nodes in hidden layer
 // diversity: how many of the top mutations are taken to the next generation
@@ -44,12 +47,16 @@ class BiologicalNeuralNetwork {
     this._inputSynapses = [];
     this._neurons = [];
     this._outputSynapses = [];
+    this._synapses = [];
     this._outputs = {};
     this._generation = 0;
     this._species = 0;
     this._trials = trials;
     this._currentTrial = 0;
     this._diversity = diversity;
+    this._currentMutation = [];
+    this._generationMutations = [];
+    this._savedMutations = [];
     for(let i = 0; i < neurons; i ++) {
       var neuron = new Neuron();
       this._neurons.push(neuron);
@@ -61,6 +68,63 @@ class BiologicalNeuralNetwork {
     console.log("trials:    " + trials);
   }
 
+  fitness(value) {
+    var currentState = state();
+    this._generationMutations.push({
+      "state": currentState,
+      "fitness": value
+    });
+  }
+
+  species() {
+
+    var initialState = Math.floor(Math.random() * this._savedMutations.length);
+    //set the state to a saved mutation
+    setState(this._savedMutations[Math.floor(Math.random() * this._savedMutations.length)]);
+    console.log("branching from state: " + initialState);
+
+    //add some randomness as a delta
+    var synapseID = Math.floor(Math.random() * this.synapses.length);
+
+    this._synapses[synapseID].value += diomgis(Math.random());
+    //return fitness function
+
+    return fitness;
+  }
+
+  generation() {
+    this._generationMutations.sort((a, b) => {
+      return a.fitness > b.fitness ? 1 : a.fitness > b.fitness ? -1 : 0;
+    });
+    //sort the _generationMutations by fitness
+    this._savedMutations = tranform(this._generationMutations.slice(0, 3), (v, i, a) => v.state);
+    //take the top 3
+    //clear _generationMutations
+    this._generationMutations = [];
+    //push to saved mutations
+  }
+
+  // create the initial savestate.
+  // the first mutation.
+  // changing input and outputs after here...
+  // dont.
+  genesis() {
+    this._savedMutations.push(state());
+  }
+
+  state() {
+    return tranform(this._synapses, (v, i, a) => v.value);
+  }
+
+  setState(state) {
+    if(state.length != this._synapses.length) {
+      console.warn("given state has " + state.length + " synapses, while the system has " + this._synapses.length);
+    }
+    for(let i = 0; i < Math.min(state.length, this._synapses.length); i ++) {
+      this._synapses[i].value = state[i];
+    }
+  }
+
   addInput(name) {
     var input = new InputNode();
     input.setName(name);
@@ -69,6 +133,7 @@ class BiologicalNeuralNetwork {
       var synapse = new Synapse(input);
 
       this._inputSynapses.push(synapse);
+      this._synapses.push(synapse);
       this._neurons[i].addSynapse(synapse);
     }
   }
@@ -79,13 +144,10 @@ class BiologicalNeuralNetwork {
     this._outputs[name] = output;
     for(let i = 0; i < this._neurons.length; i ++) {
       var synapse = new Synapse(this._neurons[i]);
+      this._synapses.push(synapse);
       this._outputSynapses.push(synapse);
       output.addSynapse(synapse);
     }
-  }
-
-  mutate() {
-
   }
 
   predict(inputs) {
@@ -195,6 +257,10 @@ class Synapse {
 
   get value() {
     return this._value;
+  }
+
+  set value(val) {
+    this._value = val;
   }
 
   calculate() {
