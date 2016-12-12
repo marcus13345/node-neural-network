@@ -57,6 +57,7 @@ class BiologicalNeuralNetwork {
     this._currentMutation = [];
     this._generationMutations = [];
     this._savedMutations = [];
+    this._locked = false;
     for(let i = 0; i < neurons; i ++) {
       var neuron = new Neuron();
       this._neurons.push(neuron);
@@ -109,7 +110,8 @@ class BiologicalNeuralNetwork {
   // changing input and outputs after here...
   // dont.
   genesis() {
-    this._savedMutations.push(state());
+    this._savedMutations.push(this.state());
+    this._locked = true;
   }
 
   state() {
@@ -126,6 +128,9 @@ class BiologicalNeuralNetwork {
   }
 
   addInput(name) {
+    if(this._locked) {
+      console.warn("input: " + name + " not added.\nNetwork is locked!");
+    }
     var input = new InputNode();
     input.setName(name);
     this._inputs[name] = input;
@@ -139,6 +144,9 @@ class BiologicalNeuralNetwork {
   }
 
   addOutput(name) {
+    if(this._locked) {
+      console.warn("input: " + name + " not added.\nNetwork is locked!");
+    }
     var output = new OutputNeuron();
     output.setName(name);
     this._outputs[name] = output;
