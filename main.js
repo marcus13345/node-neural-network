@@ -143,11 +143,16 @@ class BiologicalNeuralNetwork {
     }
   }
 
-  addOutput(name) {
+  addOutput(name, bestCallback) {
     if(this._locked) {
       console.warn("input: " + name + " not added.\nNetwork is locked!");
     }
     var output = new OutputNeuron();
+    if(bestCallback !== undefined) {
+      output.on('best', function() {
+        bestCallback(output);
+      });
+    }
     output.setName(name);
     this._outputs[name] = output;
     for(let i = 0; i < this._neurons.length; i ++) {
