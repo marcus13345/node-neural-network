@@ -290,19 +290,19 @@ class OutputNeuron extends Neuron{
 }
 
 
-var clear = console.clear || function(){process.stdout.write('\033c');};
-clear();
-console.log("Node Neural Networking Started");
-
-var network = new BiologicalNeuralNetwork(10, 5, 20)
-network.addInput("a");
-network.addInput("b");
-network.addOutput("result");
-
-console.log();
-console.log("Input Synapses:  " + network._inputSynapses.length);
-console.log("Output Synapses: " + network._outputSynapses.length);
-
-for(let i = 0; i < 10; i ++) {
-  console.log(network.predict({"a": 1, "b": 0}));
-}
+// var clear = console.clear || function(){process.stdout.write('\033c');};
+// clear();
+// console.log("Node Neural Networking Started");
+//
+// var network = new BiologicalNeuralNetwork(10, 5, 20)
+// network.addInput("a");
+// network.addInput("b");
+// network.addOutput("result");
+//
+// console.log();
+// console.log("Input Synapses:  " + network._inputSynapses.length);
+// console.log("Output Synapses: " + network._outputSynapses.length);
+//
+// for(let i = 0; i < 10; i ++) {
+//   console.log(network.predict({"a": 1, "b": 0}));
+// }
