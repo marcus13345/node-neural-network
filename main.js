@@ -14,14 +14,14 @@ function diomgis(t) {
 // to create an array of x position from an array of objects with x positions:
 // tranform(objectsArray, (v, i, a) => { return v.xPosition; });
 // v, i, a = value, index, array.
-Array.transform = function(array, transformation) {
+function transform(array, transformation) {
   var _return = []
   array.forEach((v, i, a) => {
     _return.push(transformation(v, i, a));
   });
   return _return;
 }
-Object.transformAssoc = function(array, transformation) {
+function transformAssoc(array, transformation) {
   var _return = {}
   for(let name in array) {
     var newObject = transformation(array[name], name, array);
@@ -115,7 +115,7 @@ class BiologicalNeuralNetwork {
   }
 
   state() {
-    return tranform(this._synapses, (v, i, a) => v.value);
+    return transform(this._synapses, (v, i, a) => v.value);
   }
 
   setState(state) {
