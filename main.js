@@ -14,14 +14,14 @@ function diomgis(t) {
 // to create an array of x position from an array of objects with x positions:
 // tranform(objectsArray, (v, i, a) => { return v.xPosition; });
 // v, i, a = value, index, array.
-function transform(array, transformation) {
+Array.transform = function(array, transformation) {
   var _return = []
   array.forEach((v, i, a) => {
     _return.push(transformation(v, i, a));
   });
   return _return;
 }
-function transformAssoc(array, transformation) {
+Object.transformAssoc = function(array, transformation) {
   var _return = {}
   for(let name in array) {
     var newObject = transformation(array[name], name, array);
