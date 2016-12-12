@@ -163,12 +163,18 @@ class BiologicalNeuralNetwork {
     }
   }
 
+  changeInput(name, value) {
+    this._inputs[name].value = value;
+  }
+
   predict(inputs) {
     //DO THE NETWORK
 
     //input the input information
-    for(let name in inputs) {
-      this._inputs[name].value = inputs[name];
+    if(inputs !=== undefined) {
+      for(let name in inputs) {
+        this._inputs[name].value = inputs[name];
+      }
     }
 
     //calculate the input synapses
