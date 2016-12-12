@@ -169,6 +169,7 @@ class BiologicalNeuralNetwork {
 
   predict(inputs) {
     //DO THE NETWORK
+    // console.log("asd");
 
     //input the input information
     if(inputs !== undefined) {
@@ -195,6 +196,7 @@ class BiologicalNeuralNetwork {
 
     var best = null;
     for(let name in this._outputs) {
+      // console.log(name);
       var node = this._outputs[name];
       node.calculate();
       if(best == null || node.confidence > best.confidence)
@@ -261,7 +263,7 @@ class Neuron extends Node{
 class Synapse {
   constructor(input) {
     this._input = input;
-    this._weight = 3 * (Math.random() - 0.5);
+    this._weight = 2 * (Math.random() - 0.5);
     this._value = 0;
 
     // console.log();
@@ -302,6 +304,7 @@ class OutputNeuron extends Neuron{
   }
 
   notifyBest() {
+    // console.log("BEST");
     if(this.bestCallback) {
       this.bestCallback();
     }
