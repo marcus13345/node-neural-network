@@ -39,9 +39,8 @@ function expect(a, b) {
 // root network class, to store information about the network
 // neurons: count of nodes in hidden layer
 // diversity: how many of the top mutations are taken to the next generation
-// trials: how many mutations are calculated per generation
 class BiologicalNeuralNetwork {
-  constructor(neurons, diversity, trials) {
+  constructor(neurons, diversity) {
     console.log();
     this._inputs = {};
     this._inputSynapses = [];
@@ -51,7 +50,6 @@ class BiologicalNeuralNetwork {
     this._outputs = {};
     this._generation = 0;
     this._species = 0;
-    this._trials = trials;
     this._currentTrial = 0;
     this._diversity = diversity;
     this._currentMutation = [];
@@ -66,11 +64,12 @@ class BiologicalNeuralNetwork {
     console.log("Created Network with");
     console.log("Neurons:   " + neurons);
     console.log("diversity: " + diversity);
-    console.log("trials:    " + trials);
   }
 
   fitness(value) {
-    var currentState = state();
+    // console.log("fitness callback scope", this);
+    var currentState = this.state();
+    // console.log(currentState);
     this._generationMutations.push({
       "state": currentState,
       "fitness": value
@@ -81,16 +80,18 @@ class BiologicalNeuralNetwork {
 
     var initialState = Math.floor(Math.random() * this._savedMutations.length);
     //set the state to a saved mutation
-    setState(this._savedMutations[Math.floor(Math.random() * this._savedMutations.length)]);
+    this.setState(this._savedMutations[initialState]);
     console.log("branching from state: " + initialState);
 
     //add some randomness as a delta
-    var synapseID = Math.floor(Math.random() * this.synapses.length);
+    var synapseID = Math.floor(Math.random() * this._synapses.length);
 
-    this._synapses[synapseID].value += diomgis(Math.random());
+    this._synapses[synapseID].weight += Math.random() / 5;
     //return fitness function
 
-    return fitness;
+    this._species ++;
+
+    return this.fitness;
   }
 
   generation() {
@@ -98,11 +99,20 @@ class BiologicalNeuralNetwork {
       return a.fitness > b.fitness ? 1 : a.fitness > b.fitness ? -1 : 0;
     });
     //sort the _generationMutations by fitness
-    this._savedMutations = tranform(this._generationMutations.slice(0, 3), (v, i, a) => v.state);
+    this._savedMutations = transform(this._generationMutations.slice(0, 3), (v, i, a) => v.state);
     //take the top 3
     //clear _generationMutations
     this._generationMutations = [];
+
+    var initialState = Math.floor(Math.random() * this._savedMutations.length);
+    this.setState(this._savedMutations[initialState]);
+    console.log("branching from state: " + initialState);
     //push to saved mutations
+
+    this._species = 0;
+    this._generation ++;
+
+    return this.fitness;
   }
 
   // create the initial savestate.
@@ -110,12 +120,19 @@ class BiologicalNeuralNetwork {
   // changing input and outputs after here...
   // dont.
   genesis() {
+    if(this._locked) {
+      console.warn("Network is locked. Genesis not called!");
+      return;
+    }
     this._savedMutations.push(this.state());
     this._locked = true;
+
+    return this.fitness;
   }
 
   state() {
-    return transform(this._synapses, (v, i, a) => v.value);
+    // console.log("this._synapses", this._synapses);
+    return transform(this._synapses, (v, i, a) => v.weight);
   }
 
   setState(state) {
@@ -130,6 +147,7 @@ class BiologicalNeuralNetwork {
   addInput(name) {
     if(this._locked) {
       console.warn("input: " + name + " not added.\nNetwork is locked!");
+      return;
     }
     var input = new InputNode();
     input.setName(name);
@@ -145,7 +163,8 @@ class BiologicalNeuralNetwork {
 
   addOutput(name, bestCallback) {
     if(this._locked) {
-      console.warn("input: " + name + " not added.\nNetwork is locked!");
+      console.warn("output: " + name + " not added.\nNetwork is locked!");
+      return;
     }
     var output = new OutputNeuron();
     if(bestCallback !== undefined) {
@@ -260,10 +279,14 @@ class Neuron extends Node{
   }
 }
 
+// var synCount = 0;
+
 class Synapse {
   constructor(input) {
+    // console.log("Creating synapse", synCount ++);
     this._input = input;
     this._weight = 2 * (Math.random() - 0.5);
+    // console.log("weight", this._weight);
     this._value = 0;
 
     // console.log();
@@ -276,12 +299,12 @@ class Synapse {
     this._inputs.push(input);
   }
 
-  get value() {
-    return this._value;
+  get weight() {
+    return this._weight;
   }
 
-  set value(val) {
-    this._value = val;
+  set weight(val) {
+    this._weight = val;
   }
 
   calculate() {
