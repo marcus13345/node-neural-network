@@ -171,7 +171,7 @@ class BiologicalNeuralNetwork {
     //DO THE NETWORK
 
     //input the input information
-    if(inputs !=== undefined) {
+    if(inputs !== undefined) {
       for(let name in inputs) {
         this._inputs[name].value = inputs[name];
       }
