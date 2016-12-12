@@ -1,5 +1,7 @@
 let colors = require('colors');
 
+var weightConstant = 100
+
 //because clamping is a thing that needs to happen
 function sigmoid(t) {
     return 1/(1+Math.pow(Math.E, -t));
@@ -86,7 +88,7 @@ class BiologicalNeuralNetwork {
     //add some randomness as a delta
     for(let i = 0; i < 30; i ++ ) {
       var synapseID = Math.floor(Math.random() * this._synapses.length);
-      this._synapses[synapseID].weight += Math.random() / 5;
+      this._synapses[synapseID].weight += Math.random() * weightConstant / 10;
       //return fitness function
     }
 
@@ -286,7 +288,7 @@ class Synapse {
   constructor(input) {
     // console.log("Creating synapse", synCount ++);
     this._input = input;
-    this._weight = 2 * (Math.random() - 0.5);
+    this._weight = 2 * (Math.random() - 0.5) * weightConstant;
     // console.log("weight", this._weight);
     this._value = 0;
 
