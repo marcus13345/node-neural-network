@@ -84,10 +84,11 @@ class BiologicalNeuralNetwork {
     console.log("branching from state: " + initialState);
 
     //add some randomness as a delta
-    var synapseID = Math.floor(Math.random() * this._synapses.length);
-
-    this._synapses[synapseID].weight += Math.random() / 5;
-    //return fitness function
+    for(let i = 0; i < 30; i ++ ) {
+      var synapseID = Math.floor(Math.random() * this._synapses.length);
+      this._synapses[synapseID].weight += Math.random() / 5;
+      //return fitness function
+    }
 
     this._species ++;
 
